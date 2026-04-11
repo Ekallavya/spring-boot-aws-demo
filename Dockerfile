@@ -1,5 +1,10 @@
 FROM amazoncorretto:21
 LABEL authors="MSR"
+# Set working directory inside the container
+WORKDIR /app
+# Copy the compiled Java application JAR file into the container
+COPY ./target/spring-boot-aws-demo.jar /app
+# Expose the port the Spring Boot application will run on
 EXPOSE 8080
-ADD target/spring-boot-aws-demo.jar spring-boot-aws-demo.jar
+# Command to run the application
 ENTRYPOINT ["java","-jar","/spring-boot-aws-demo.jar"]
