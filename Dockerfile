@@ -1,4 +1,4 @@
-FROM amazoncorretto:21
+FROM amazoncorretto:17
 LABEL authors="MSR"
 # Set working directory inside the container
 WORKDIR /app
