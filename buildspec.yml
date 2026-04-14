@@ -26,9 +26,9 @@ phases:
       - printf '[{"name":"spring-boot-aws-demo","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - echo Writing image definitions file...
       # add your container name
-      #- DOCKER_CONTAINER_NAME=spring-boot-aws-demo-ecr
-      #- printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-      #- echo $DOCKER_CONTAINER_NAME
+      - DOCKER_CONTAINER_NAME=spring-boot-aws-demo
+      - printf '[{"name":"%s","imageUri":"%s"}]' $DOCKER_CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - echo $DOCKER_CONTAINER_NAME
       - echo printing imagedefinitions.json
       - cat imagedefinitions.json
 
