@@ -14,11 +14,13 @@ public class ProductRepository {
          Product product1 = new Product(1L,"Apple",50L);
          Product product2 = new Product(2L,"Banana",60L);
          Product product3 = new Product(3L,"Orange",70L);
-         Product product4 = new Product(4L,"Grapes",70L);
+         Product product4 = new Product(4L,"Grapes",80L);
+        Product product5 = new Product(5L,"Grapes",90L);
         products.put(product1.getId(), product1);
         products.put(product2.getId(), product2);
         products.put(product3.getId(), product3);
         products.put(product4.getId(), product4);
+        products.put(product5.getId(), product5);
 
     }
 
