@@ -15,7 +15,8 @@ public class ProductRepository {
          Product product2 = new Product(2L,"Banana",60L);
          Product product3 = new Product(3L,"Orange",70L);
          Product product4 = new Product(4L,"Grapes",80L);
-        Product product5 = new Product(5L,"Grapes",90L);
+        Product product5 = new Product(5L,"Kiwi",91L);
+        Product product6 = new Product(6L,"Pineapple",92L);
         products.put(product1.getId(), product1);
         products.put(product2.getId(), product2);
         products.put(product3.getId(), product3);
