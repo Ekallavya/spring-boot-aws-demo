@@ -1,0 +1,66 @@
+##Configure AWS API Gateway 
+
+	-> login AWS management console
+	-> search API Gateway ,clickon it
+	-> navigate to APIs
+	->  clickon create API
+	-> navigate to choose an API type
+	   go to REST API
+	-> clickon Build
+	-> select radio button of New API
+	-> API endpoint type ,select  Regional from drop_down list
+	-> API name ,give input here
+	
+		ex: product-apigateway
+	-> click on create API
+	-> after successfull creation 
+	-> click on create resource
+	-> resource name : give input here
+	   ex:-product-service
+	-> after successful creation
+	-> click on create method
+	-> after successful creation ,select method type
+		ex:
+		    GET
+	-> click on Deploy
+	-> select "New Stage" for stage
+	-> stage name : give input here
+		ex: devenv
+	->clickon deploy
+	
+	-> navigate stage details , copy  invoke URL endpoint ,should be used for testing
+	
+	https://49hu7igoah.execute-api.ap-south-2.amazonaws.com/devenv/product-service
+		
+		test  endpoint
+		
+		https://49hu7igoah.execute-api.ap-south-2.amazonaws.com/devenv/product-service/api/product/getAllProducts
+		
+		https://066pc80wm4.execute-api.ap-south-2.amazonaws.com/dev/proudct-service/api/product/getAllProducts
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

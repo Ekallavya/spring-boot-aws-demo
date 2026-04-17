@@ -1,0 +1,215 @@
+## Creat	e Spring Boot project spring-boot-aws-demo
+	-> mvn clean install
+	-> after successful build ,ensure  target\spring-boot-aws-demo.jar  is availabe 
+	-> Run SpringBoot Application
+	-> Unit testing , ensure postman testing , all api end points working as expected
+	
+		Ex: 
+		GET -> localhost:8080/api/book
+		POST -> localhost:8080/api/book
+				
+			{
+				"id": 4,
+				"name": "Pineapple",
+				"price": 60.0
+			}
+
+##Create ECR  REPOSITORY_URI
+	->login into AWS management console
+	-> navigate to private  registry
+	-> click on create repository
+	-> repo name : give input here
+	
+		ex: spring-boot-aws-demo-ecr
+	-> select Immutable for Image tag mutability
+	-> click on create
+	-> after successful creation , click on repository
+	-> copy repository URI and save it for further use 
+	   
+	   Ex: 
+	   youraccountidher.dkr.ecr.ap-south-2.amazonaws.com/spring-boot-aws-demo-ecr
+	->navigate to images (initially no images , once uploaded it would be displayed)
+			
+## Create/Configure AWS CodeBuild to upload docker image to ECR repository
+
+	-> login into AWS management console
+	-> search CodeBuild  and click on it
+	-> navigate to Build projects 
+	-> click on create project
+	-> project name : give input here
+		ex: spring-boot-aws-demo
+	-> navigate to source 
+	-> select source provider from drop-down list
+		ex : GitHub
+	-> select radio button option -Repository in my GitHub account
+	-> give input here ,your github account credentials to provide access to codebuild
+	-> once github login is succesful
+	-> select your project repository
+		ex:
+			https://github.com/youraccountname/spring-boot-aws-demo.git
+	-> give input  source version (optional)
+	     branch name
+	-> navigate to Environment
+	-> select radio button  Managed Image for Environment image
+	->select radio button Container for Running Mode
+	-> select Amazon Linux  from drop-down for Operating System
+	-> select standard from drop-down for Runtime
+	-> select  aws/codebuild/amazonlinux-x86-64-standard:6.0  from drop-down for image
+	-> select Always use latest image for this runtime from drop-down for  Image Version
+	-> select radio button New Service role
+	-> navigate to Buildspec
+	-> select radio button : Use builidspec file
+	-> navigate to service role ,copy that service role
+	
+			-> apply policies
+			
+		 AmazonEC2ContainerRegistryFullAccess 
+		 AmazonEC2ContainerRegistryPowerUser
+			
+	-> click on create build project
+	-> next page ,click on start build
+	-> After succesful build , check ECR for newly upload images
+	
+	 Note :
+		 ensure Dockerfile available with correct commands
+	     ensure buildspec.yml  present project root structure and properly configure with ECR repository name and  pre build , build , postbuild
+		if any build errors ,check attached polices applied or not for the specified current projcet role
+		
+		-> Navigate ,IAM -> Access Management -> Roles
+		-> click on Add permissions
+		-> click on attach policies
+		-> add policies to security group
+	
+		 AmazonEC2ContainerRegistryFullAccess 
+		 AmazonEC2ContainerRegistryPowerUser
+		
+	
+		
+	-> After succesful build , check ECR for newly upload images	
+	
+## AWS ECS configuration
+
+	-> Login to AWS management console
+	-> search ECS ,click on it
+	-> navigate to Task definitions
+	-> click on create new task definitions
+	->	give input for Task definition family
+		ex:
+			spring-boot-aws-demo-taskfamily
+	-> navigate to Infrastructure requirements
+	
+	-> Select AWS Fargate
+	-> navigate to container section
+	-> give input here for container
+	
+	   ex:
+	       pring-boot-aws-demo
+		   
+	-> click on Browse ECR images  and select appropriate  ECR image details
+	-> navigate to port mappings
+	-> click on Add port mappings
+		Ex:
+			8080 ,TCP , HTTP  (port, protocol ,App Protocol)
+	-> click on create
+	
+	## creating ECS cluster
+	
+	-> navigate to Clusters
+	-> click on create cluster
+	-> cluster name : give input here 
+	->  namespace give input here ( service connect defaults)
+	
+		ex: cloudtech
+		
+	-> click on create
+	-> after succesful cluster creation , click on newly created cluster 
+	-> navigate to services
+	-> click on create for new service creation
+	-> select task definition family from drop-down
+	-> service name ,give input here
+	
+		ex: spring-boot-aws-demo-taskfamily-service-9gg3kgj2
+	-> navigate to Networking
+	-> select existing security group or create new security group
+	-> inbound rules for security group
+		Add rules
+		All TCP ,Anywhere
+	-> public Ip , ensure turned on
+	-> click on create
+	-> after succesful , ensure tasks are up and running
+	-> click on newly created servicename
+	-> navigate to Health and Metrics
+	-> check Health status
+	-> next ,click on clusters
+	-> click on newly crated cluster
+	->  navigate to Tasks  tab ,clickon it
+	-> click on  running task
+	-> click on Network bindings
+	-> navigate to configuration 
+	-> figure out , public IP , copy an save it , should be used for testing
+	
+			http://16.112.190.212:8080/api/product/getAllProducts
+			
+## AWS Codepipeline Configuration
+
+	-> Login to AWS management console
+	-> search CodePipeLine ,click on it
+	-> navigate to pipelines
+	-> click on create pipelines
+	-> select category : Build custom pipeline (radio button)
+	-> click on next
+	-> pipeline name : give input here
+		ex:
+			spring-boot-aws-demo-pipeline
+	-> service role : select radio butto : New Service role
+	-> click on next
+	-> select GitHub from drop-down  for source provider
+	-> click on connect to GitHub
+	-> click on confirm
+	-> select appropriate repository from drop-down list
+	-> select appropriate branch from drop-down
+	-> click on next
+	->  select build provider : other build providers (radio button)
+	-> select AWSCodeBuild from drop-down list
+	-> select project name ( by default ,avialbe codebuild projects will display)
+	-> click on next
+	-> skip test statge
+	-> navigate Deploy category
+	-> select Deploy provider : AWS ECS  from drop-down list
+			-> select cluster name (by default . ECS cluster will be displayed here)
+			-> select service name ( by default ECS service will display here)
+	-> click on create
+	-> After succesful pipeline steps succeeded 
+	-> use ECS public IP for testing
+	
+	Note :
+	
+	  if any code changes pushed to sepcified github repository and specified branch , pipeline automatically trigger to build and deploy into ECS cluster
+	
+	Key points :
+
+	-> ensure ECT registry name is same in both places , ECR registries and build spec  REPOSITORY_URI
+		ex:
+			REPOSITORY_URI=667503138853.dkr.ecr.ap-south-2.amazonaws.com/spring-boot-aws-demo-ecr
+	-> ensure  container name is same in both places , ECS taskconfig  and buildsoec.yml file
+ 
+		Ex: spring-boot-aws-demo
+
+
+## Postma Testing
+
+	 -> navigate to  ECS
+	 -> go to clusters
+	 -> select specified/required clusters
+	 -> go to services
+	 -> select specified services
+	 -> navigate to tasks
+	 -> select specified/required  tasks
+	 -> navigate to configuration
+	 -> capture public ip details
+	 -> use public ip + port + api end point for  testing
+	 -> alternatively navigate to Network bindings for double check  external links exposed to external world
+ 
+ 
+
+
